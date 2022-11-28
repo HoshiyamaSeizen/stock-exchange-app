@@ -1,0 +1,33 @@
+@import './_vars'
+
+.list
+    header
+        display: flex
+        align-items: center
+        justify-content: space-between
+        margin-bottom: 30px
+        .MuiFormControl-root
+            margin: 0 20px 0 20px
+
+    main
+        max-height: 50vh
+        padding: 2px 10px 10px 0
+        overflow-y: auto
+        .MuiAccordion-root
+            border: 1px solid $color-main-dark
+            &:not(.Mui-expanded)
+                margin-top: -1px
+            button
+                margin-left: 8px
+                &:last-child
+                    float: right
+            .data-buttons
+                margin: 0 10px 20px 0
+                display: flex
+                align-items: center
+                float: right
+                button
+                    float: none
+            .abbr
+                color: #888
+                margin-right: 20px

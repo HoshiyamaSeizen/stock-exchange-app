@@ -1,5 +1,7 @@
 import React from 'react';
 
+import '../styles/NotFound.sass';
+
 export const NotFound = () => {
-	return <div>NotFound</div>;
+	return <h1 className="notfound">404: Not Found</h1>;
 };

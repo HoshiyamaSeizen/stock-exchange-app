@@ -1,0 +1,62 @@
+@import './_vars'
+
+*
+  margin: 0
+  padding: 0
+  box-sizing: border-box
+  font-family: $font-family
+
+::selection
+  background-color: $color-main
+  color: white
+
+body
+  background-color: $color-main-bg
+  overflow: hidden
+
+h1, h2, h3
+  color: $color-main-dark
+  user-select: none
+
+::-webkit-scrollbar
+  width: 12px
+
+::-webkit-scrollbar-track
+  background: transparent
+
+::-webkit-scrollbar-thumb
+  background: $color-main-dark
+  border-radius: 6px
+
+::-webkit-scrollbar-thumb:hover
+  background: $color-main
+
+.window
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+  width: 80%
+  max-width: 640px
+  height: 80%
+  max-height: 80%
+  padding: 6px 40px 20px
+  background: white
+  border: 5px solid $color-main-dark
+  border-radius: 10px
+
+  .MuiTabs-root
+    margin-bottom: 20px
+
+.MuiDialog-paper
+  padding: 20px 40px
+  width: 100%
+  overflow: hidden
+  button
+    margin-top: 20px
+.data-dialog > div > .MuiDialog-paper
+  height: 90vh
+  min-width: 90vw
+  .abbr
+    color: #888
+    margin-right: 20px
