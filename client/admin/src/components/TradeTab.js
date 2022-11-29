@@ -82,7 +82,12 @@ export const TradeTab = () => {
 						onChange={(e) => setSpeed(+e.target.value)}
 					/>
 				</FormControl>
-				<Button color={(started && 'danger') || 'primary'} onClick={toggle} variant="contained">
+				<Button
+					className="start-btn"
+					color={(started && 'danger') || 'primary'}
+					onClick={toggle}
+					variant="contained"
+				>
 					{!started && 'Start trading'}
 					{started && 'Stop trading'}
 				</Button>
