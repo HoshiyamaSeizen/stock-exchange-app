@@ -39,7 +39,7 @@ export const StocksList = () => {
 	};
 
 	const handleAccordionChange = (panel) => (e, isExpanded) => {
-		setExpanded(isExpanded ? panel : false);
+		if (e.target.tagName !== 'INPUT') setExpanded(isExpanded ? panel : false);
 	};
 
 	const search = (e) => {
@@ -56,7 +56,6 @@ export const StocksList = () => {
 		const newStocks = [...stocks];
 		newStocks[index].checked = value;
 		setStocks(newStocks);
-		console.log(value);
 	};
 
 	return (
@@ -86,40 +85,38 @@ export const StocksList = () => {
 							id="panel1a-header"
 						>
 							<h4>
+								<FormControlLabel
+									control={
+										<Checkbox
+											id={`checked-${index}`}
+											checked={stock.checked}
+											onChange={saveStock(index)}
+										/>
+									}
+								/>
 								<span className="abbr">{stock.abbr}</span>
 								{stock.name}
 							</h4>
 						</AccordionSummary>
 						<AccordionDetails>
-							<FormControlLabel
-								control={
-									<Checkbox
-										id={`checked-${index}`}
-										checked={stock.checked}
-										onChange={saveStock(index)}
-									/>
-								}
-								label="Include in trade:"
-								labelPlacement="start"
-							/>
+							<div className="data-buttons">
+								<p>History:</p>
+								<Button
+									className="data-btn"
+									variant="contained"
+									onClick={handleClickOpen(true, stock.id)}
+								>
+									Table
+								</Button>
+								<Button
+									className="data-btn"
+									variant="contained"
+									onClick={handleClickOpen(false, stock.id)}
+								>
+									Graph
+								</Button>
+							</div>
 						</AccordionDetails>
-						<div className="data-buttons">
-							<p>History:</p>
-							<Button
-								className="data-btn"
-								variant="contained"
-								onClick={handleClickOpen(true, stock.id)}
-							>
-								Table
-							</Button>
-							<Button
-								className="data-btn"
-								variant="contained"
-								onClick={handleClickOpen(false, stock.id)}
-							>
-								Graph
-							</Button>
-						</div>
 					</Accordion>
 				))}
 			</main>
