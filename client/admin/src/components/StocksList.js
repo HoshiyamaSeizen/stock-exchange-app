@@ -11,25 +11,33 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { DataDialog } from './DataDialog';
 
+import { useDispatch } from 'react-redux';
+import { set, remove, add } from '../store/StocksReducer';
+
 import '../styles/List.sass';
+
+let stocksList = [];
 
 export const StocksList = () => {
 	const [expanded, setExpanded] = useState(false);
-	const [stocks, setStocks] = useState([]);
+	const [stocks, setStocks] = useState(stocksList);
 	const [dialogOpen, setOpen] = useState(false);
 	const [isTable, setTable] = useState(true);
 	const [currentStock, setCurrentStock] = useState(null);
 
+	const dispatch = useDispatch();
+
 	useEffect(() => {
-		const _stocks = [
-			{ id: 0, abbr: 'AAPL', name: 'Apple, Inc.', visible: true, checked: false },
-			{ id: 1, abbr: 'SBUX', name: 'Starbucks, Inc.', visible: true, checked: true },
-			{ id: 2, abbr: 'MSFT', name: 'Microsoft, Inc.', visible: true, checked: true },
-			{ id: 3, abbr: 'CSCO', name: 'Cisco Systems, Inc.', visible: true, checked: true },
-		];
-		_stocks.reverse();
-		setStocks(_stocks);
-	}, []);
+		if (stocksList.length > 0) return;
+		stocksList = [];
+		fetch('/api/stocks/', { method: 'GET' })
+			.then((res) => res.json())
+			.then((data) => {
+				data.forEach((stock) => stocksList.push({ ...stock, visible: true }));
+				setStocks(stocksList);
+				dispatch(set(stocksList.filter((s) => s.checked).map((s) => ({ ...s }))));
+			});
+	}, [dispatch]);
 
 	const handleClickOpen = (isTable, id) => (e) => {
 		e.target.blur();
@@ -51,11 +59,21 @@ export const StocksList = () => {
 		);
 	};
 
-	const saveStock = (index) => () => {
-		const value = document.getElementById(`checked-${index}`).checked;
-		const newStocks = [...stocks];
-		newStocks[index].checked = value;
-		setStocks(newStocks);
+	const saveStock = (id, index) => () => {
+		const checked = document.getElementById(`checked-${index}`).checked;
+		fetch(`/api/stocks/${id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ checked }),
+		})
+			.then((res) => res.json())
+			.then((stock) => {
+				stocksList[index].checked = stock.checked;
+				setStocks([...stocks]);
+
+				const action = stock.checked ? add : remove;
+				dispatch(action({ ...stock }));
+			});
 	};
 
 	return (
@@ -90,7 +108,7 @@ export const StocksList = () => {
 										<Checkbox
 											id={`checked-${index}`}
 											checked={stock.checked}
-											onChange={saveStock(index)}
+											onChange={saveStock(stock.id, index)}
 										/>
 									}
 								/>
