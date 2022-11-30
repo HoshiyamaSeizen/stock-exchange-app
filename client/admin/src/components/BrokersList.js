@@ -10,6 +10,8 @@ import {
 	OutlinedInput,
 	InputAdornment,
 	Button,
+	Snackbar,
+	Alert,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -18,41 +20,31 @@ import { NewBrokerDialog } from './NewBrokerDialog';
 
 import '../styles/List.sass';
 
-export const BrokersList = () => {
+let brokersList = [];
+
+export const BrokersList = (props) => {
 	const [expanded, setExpanded] = useState(false);
-	const [brokers, setBrokers] = useState([]);
+	const [brokers, setBrokers] = useState(brokersList);
 	const [dialogOpen, setOpen] = useState(false);
+	const [snackbarOpen, setSnackbar] = useState(false);
+	const [snackbarText, setSnackbarText] = useState('');
 
 	useEffect(() => {
-		const users = [
-			{ id: 0, name: 'John Doe 0', visible: true, money: 100 },
-			{ id: 1, name: 'John Doe 1', visible: true, money: 100 },
-			{ id: 2, name: 'John Doe 2', visible: true, money: 100 },
-			{ id: 3, name: 'John Doe 3', visible: true, money: 100 },
-			{ id: 4, name: 'John Doe 4', visible: true, money: 100 },
-			{ id: 5, name: 'John Doe 5', visible: true, money: 100 },
-			{ id: 6, name: 'John Doe 6', visible: true, money: 100 },
-			{ id: 7, name: 'John Doe 7', visible: true, money: 100 },
-			{ id: 8, name: 'John Doe 8', visible: true, money: 100 },
-			{ id: 9, name: 'John Doe 9', visible: true, money: 100 },
-			{ id: 10, name: 'John Doe 10', visible: true, money: 100 },
-			{ id: 11, name: 'John Doe 11', visible: true, money: 100 },
-			{ id: 12, name: 'John Doe 12', visible: true, money: 100 },
-			{ id: 13, name: 'John Doe 13', visible: true, money: 100 },
-			{ id: 14, name: 'John Doe 14', visible: true, money: 100 },
-			{ id: 15, name: 'John Doe 15', visible: true, money: 100 },
-			{ id: 16, name: 'John Doe 16', visible: true, money: 100 },
-			{ id: 17, name: 'John Doe 17', visible: true, money: 100 },
-			{ id: 18, name: 'John Doe 18', visible: true, money: 100 },
-			{ id: 19, name: 'John Doe 19', visible: true, money: 100 },
-			{ id: 20, name: 'John Doe 20', visible: true, money: 100 },
-		];
-		users.reverse();
-		setBrokers(users);
+		if (brokersList.length > 0) return;
+		brokersList = [];
+		fetch('/api/brokers/', { method: 'GET' })
+			.then((res) => res.json())
+			.then((data) => {
+				data.forEach((broker) => brokersList.unshift({ ...broker, visible: true }));
+				setBrokers(brokersList);
+			});
 	}, []);
 
 	const handleClickOpen = () => setOpen(true);
-
+	const handleSnackbarClose = (event, reason) => {
+		if (reason === 'clickaway') return;
+		setSnackbar(false);
+	};
 	const handleAccordionChange = (panel) => (e, isExpanded) => {
 		setExpanded(isExpanded ? panel : false);
 	};
@@ -67,27 +59,50 @@ export const BrokersList = () => {
 	};
 
 	const addBroker = (name, money) => {
-		const id = brokers.at(0).id + 1 || 0;
-		setBrokers([{ id, name, money, visible: true }, ...brokers]);
-		setExpanded(false);
+		fetch('/api/brokers', {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ name, money }),
+		})
+			.then((res) => res.json())
+			.then((broker) => {
+				brokersList.unshift({ ...broker, visible: true });
+				setExpanded(false);
+				setBrokers(brokersList);
+				setSnackbarText('Broker added');
+				setSnackbar(true);
+			});
 	};
 
-	const saveBroker = (index) => () => {
-		const value = document.getElementById(`money-${index}`).value;
-		const newBrokers = [...brokers];
-		newBrokers[index].money = +value;
-		setBrokers(newBrokers);
-		console.log(value);
+	const saveBroker = (id, index) => () => {
+		const money = +document.getElementById(`money-${index}`).value;
+		fetch(`/api/brokers/${id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ money }),
+		})
+			.then((res) => res.json())
+			.then((broker) => {
+				brokersList[index].money = broker.money;
+				setBrokers([...brokers]);
+				setSnackbarText('Broker changed');
+				setSnackbar(true);
+			});
 	};
 
 	const deleteBroker = (id) => () => {
 		if (window.confirm('Do you really want to delete this user?')) {
-			setBrokers(brokers.filter((broker) => broker.id !== id));
+			fetch(`/api/brokers/${id}`, { method: 'DELETE' }).then(() => {
+				setBrokers(brokers.filter((broker) => broker.id !== id));
+				setSnackbarText('Broker deleted');
+				setSnackbar(true);
+			});
 		}
 	};
 
 	return (
 		<div className="list">
+			<p>{props.aa}</p>
 			<header>
 				<h2>Brokers</h2>
 				<TextField
@@ -128,7 +143,7 @@ export const BrokersList = () => {
 									type="number"
 								/>
 							</FormControl>
-							<Button variant="contained" onClick={saveBroker(index)}>
+							<Button variant="contained" onClick={saveBroker(broker.id, index)}>
 								Save
 							</Button>
 							<IconButton color="danger" onClick={deleteBroker(broker.id)}>
@@ -139,6 +154,11 @@ export const BrokersList = () => {
 				))}
 			</main>
 			<NewBrokerDialog opened={dialogOpen} close={() => setOpen(false)} addBroker={addBroker} />
+			<Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
+				<Alert onClose={handleSnackbarClose} severity="success" sx={{ width: '100%' }}>
+					{snackbarText}
+				</Alert>
+			</Snackbar>
 		</div>
 	);
 };
