@@ -9,7 +9,7 @@
     "id": 1,
     "abbr": "SBUX",
     "name": "Starbucks, Inc.",
-    "checked": false
+    "checked": true
   },
   {
     "id": 2,
@@ -27,36 +27,24 @@
     "id": 4,
     "abbr": "QCOM",
     "name": "QUALCOMM Incorporated",
-    "checked": false
+    "checked": true
   },
   {
     "id": 5,
-    "abbr": "META",
-    "name": "Meta, Inc.",
-    "checked": false
-  },
-  {
-    "id": 6,
     "abbr": "AMZN",
     "name": "Amazon.com, Inc.",
     "checked": false
   },
   {
-    "id": 7,
+    "id": 6,
     "abbr": "TSLA",
     "name": "Tesla, Inc.",
-    "checked": false
+    "checked": true
   },
   {
-    "id": 8,
+    "id": 7,
     "abbr": "AMD",
     "name": "Advanced Micro Devices, Inc.",
-    "checked": false
-  },
-  {
-    "id": 9,
-    "abbr": "NFLX",
-    "name": "NFLX Inc.",
     "checked": false
   }
 ]
