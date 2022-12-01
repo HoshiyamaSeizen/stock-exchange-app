@@ -71,7 +71,7 @@ function TablePaginationActions(props) {
 
 export const DataTable = (props) => {
 	const [page, setPage] = useState(0);
-	const [rowsPerPage, setRowsPerPage] = useState(20);
+	const [rowsPerPage, setRowsPerPage] = useState(10);
 	const [rows, setData] = useState([]);
 	const [emptyRows, setEmptyRows] = useState(0);
 
