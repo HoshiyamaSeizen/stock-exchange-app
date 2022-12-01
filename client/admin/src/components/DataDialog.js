@@ -1,7 +1,18 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, DialogTitle } from '@mui/material';
+import { DataTable } from './DataTable';
+import { DataGraph } from './DataGraph';
 
 export const DataDialog = (props) => {
+	const [data, setData] = useState([]);
+
+	useEffect(() => {
+		if (!props.opened) return;
+		fetch(`/api/trade/${props.abbr}`, { method: 'GET' })
+			.then((res) => res.json())
+			.then(({ data }) => setData(data));
+	}, [props.abbr, props.opened]);
+
 	const handleClose = () => props.close();
 
 	return (
@@ -11,6 +22,8 @@ export const DataDialog = (props) => {
 				<span className="abbr">{props.abbr}</span>
 				{props.name}
 			</h4>
+			{props.isTable && <DataTable data={data} />}
+			{!props.isTable && <DataGraph data={data} />}
 		</Dialog>
 	);
 };
