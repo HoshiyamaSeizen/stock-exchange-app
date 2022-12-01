@@ -7,51 +7,80 @@ import {
 	InputLabel,
 	OutlinedInput,
 	InputAdornment,
+	Snackbar,
+	Alert,
 } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DataDialog } from './DataDialog';
+
+import { useSelector } from 'react-redux';
 
 import '../styles/TradeTab.sass';
+import { socketConnect } from '../socket';
+
+let activeStocks;
+let socket;
 
 export const TradeTab = () => {
-	const [date, setDate] = useState(dayjs('2020-01-01T0:0:0'));
+	const [date, setDate] = useState(dayjs('2017-11-29T0:0:0'));
 	const [speed, setSpeed] = useState(1);
 	const [started, setStarted] = useState(false);
 	const [stocks, setStocks] = useState([]);
-	const [dialogOpen, setOpen] = useState(false);
-	const [currentStock, setCurrentStock] = useState(null);
+	const [snackbarOpen, setSnackbar] = useState(false);
+	const [snackbarText, setSnackbarText] = useState('');
+	const [currentDate, setCurrentDate] = useState('');
+	const [prices, setPrices] = useState([]);
+
+	activeStocks = useSelector((state) => state.reducer.stocks);
 
 	useEffect(() => {
-		const _stocks = [
-			{ id: 0, abbr: 'AAPL', name: 'Apple, Inc.', visible: true, checked: false },
-			{ id: 1, abbr: 'SBUX', name: 'Starbucks, Inc.', visible: true, checked: true },
-			{ id: 2, abbr: 'MSFT', name: 'Microsoft, Inc.', visible: true, checked: true },
-			{ id: 3, abbr: 'CSCO', name: 'Cisco Systems, Inc.', visible: true, checked: true },
-			{ id: 4, abbr: 'AAPL', name: 'Apple, Inc.', visible: true, checked: false },
-			{ id: 5, abbr: 'SBUX', name: 'Starbucks, Inc.', visible: true, checked: true },
-			{ id: 6, abbr: 'MSFT', name: 'Microsoft, Inc.', visible: true, checked: true },
-			{ id: 7, abbr: 'CSCO', name: 'Cisco Systems, Inc.', visible: true, checked: true },
-			{ id: 8, abbr: 'AAPL', name: 'Apple, Inc.', visible: true, checked: false },
-			{ id: 9, abbr: 'SBUX', name: 'Starbucks, Inc.', visible: true, checked: true },
-			{ id: 10, abbr: 'MSFT', name: 'Microsoft, Inc.', visible: true, checked: true },
-			{ id: 11, abbr: 'CSCO', name: 'Cisco Systems, Inc.', visible: true, checked: true },
-		];
-		_stocks.reverse();
-		setStocks(_stocks);
+		if (activeStocks.length > 0) return setStocks(activeStocks);
+		activeStocks = [];
+		fetch('/api/stocks/', { method: 'GET' })
+			.then((res) => res.json())
+			.then((data) => {
+				activeStocks = data.filter((s) => s.checked);
+				setStocks(activeStocks);
+			});
 	}, []);
 
-	const handleClickOpen = (id) => (e) => {
-		setOpen(true);
-		setCurrentStock(stocks.find((s) => s.id === id));
+	useEffect(() => {
+		fetch('/api/trade/', { method: 'GET' })
+			.then((res) => res.json())
+			.then(({ running }) => {
+				socket = socketConnect();
+				socket.on('status', ({ started }) => {
+					setSnackbarText(
+						started ? 'Trade started' : "Stock exchange wasn't active on this day"
+					);
+					setSnackbar(true);
+					setStarted(started);
+				});
+				socket.on('stopped', () => console.log('stopped'));
+				socket.on('data', (data) => {
+					setCurrentDate(data.date);
+					setPrices(data.stocks);
+				});
+				if (running) setStarted(true);
+			});
+	}, []);
+
+	const handleSnackbarClose = (event, reason) => {
+		if (reason === 'clickaway') return;
+		setSnackbar(false);
 	};
 
 	const toggle = () => {
 		if (!started) {
-			console.log(`${date.$m}/${date.$D}/${date.$y}`, speed);
+			socket.emit('start', {
+				date: date.format('MM/DD/YYYY'),
+				pace: speed,
+				stocks: stocks.map((s) => s.abbr),
+			});
 			setStarted(true);
 		} else {
+			socket.emit('stop');
 			setStarted(false);
 		}
 	};
@@ -94,19 +123,22 @@ export const TradeTab = () => {
 			</div>
 			<div className="status">
 				<h2>Status</h2>
+				{started && <p className="date">Date: {currentDate}</p>}
 				{started && (
 					<div className="board">
 						{stocks
 							.filter((stock) => stock.checked)
 							.map((stock) => (
-								<div
-									key={stock.id}
-									className="container"
-									onClick={handleClickOpen(stock.id)}
-								>
+								<div key={stock.id} className="container">
 									<h4>
 										<span className="abbr">{stock.abbr}</span>
 										{stock.name}
+										<p className="price">
+											{(() => {
+												const price = prices.find((s) => s.abbr === stock.abbr)?.price;
+												return price ? price + '$' : 'Not in trade';
+											})()}
+										</p>
 									</h4>
 								</div>
 							))}
@@ -114,13 +146,11 @@ export const TradeTab = () => {
 				)}
 				{!started && <p>OFFLINE</p>}
 			</div>
-			<DataDialog
-				opened={dialogOpen}
-				close={() => setOpen(false)}
-				isTable={false}
-				abbr={currentStock?.abbr}
-				name={currentStock?.name}
-			/>
+			<Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
+				<Alert onClose={handleSnackbarClose} severity="info" sx={{ width: '100%' }}>
+					{snackbarText}
+				</Alert>
+			</Snackbar>
 		</div>
 	);
 };
