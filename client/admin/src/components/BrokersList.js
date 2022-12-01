@@ -93,7 +93,8 @@ export const BrokersList = (props) => {
 	const deleteBroker = (id) => () => {
 		if (window.confirm('Do you really want to delete this user?')) {
 			fetch(`/api/brokers/${id}`, { method: 'DELETE' }).then(() => {
-				setBrokers(brokers.filter((broker) => broker.id !== id));
+				brokersList = brokers.filter((broker) => broker.id !== id);
+				setBrokers(brokersList);
 				setSnackbarText('Broker deleted');
 				setSnackbar(true);
 			});
