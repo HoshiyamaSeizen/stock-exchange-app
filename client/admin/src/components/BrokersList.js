@@ -52,7 +52,7 @@ export const BrokersList = (props) => {
 	const search = (e) => {
 		setBrokers(
 			brokers.map((broker) => {
-				broker.visible = broker.name.includes(e.target.value);
+				broker.visible = broker.name.toLowerCase().includes(e.target.value.toLowerCase());
 				return broker;
 			})
 		);

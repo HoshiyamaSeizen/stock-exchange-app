@@ -53,7 +53,9 @@ export const StocksList = () => {
 	const search = (e) => {
 		setStocks(
 			stocks.map((stock) => {
-				stock.visible = stock.name.includes(e.target.value);
+				stock.visible =
+					stock.name.toLowerCase().includes(e.target.value.toLowerCase()) ||
+					stock.abbr.toLowerCase().includes(e.target.value.toLowerCase());
 				return stock;
 			})
 		);
