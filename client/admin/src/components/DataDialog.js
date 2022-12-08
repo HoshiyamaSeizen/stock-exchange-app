@@ -8,7 +8,7 @@ export const DataDialog = (props) => {
 
 	useEffect(() => {
 		if (!props.opened) return;
-		fetch(`/api/trade/${props.abbr}`, { method: 'GET' })
+		fetch(`/api/trade/history/${props.abbr}`, { method: 'GET' })
 			.then((res) => res.json())
 			.then(({ data }) => setData(data));
 	}, [props.abbr, props.opened]);
