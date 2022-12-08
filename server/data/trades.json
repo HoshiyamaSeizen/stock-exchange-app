@@ -1,0 +1,44 @@
+[
+  {
+    "uid": 2,
+    "sid": 2,
+    "amount": 4,
+    "spent": 10000
+  },
+  {
+    "uid": 2,
+    "sid": 0,
+    "amount": 1,
+    "spent": 158.93
+  },
+  {
+    "uid": 2,
+    "sid": 7,
+    "amount": 2,
+    "spent": 109.34
+  },
+  {
+    "uid": 2,
+    "sid": 6,
+    "amount": 2,
+    "spent": 129.2014
+  },
+  {
+    "uid": 2,
+    "sid": 3,
+    "amount": 1,
+    "spent": 45.7
+  },
+  {
+    "uid": 1,
+    "sid": 0,
+    "amount": 1,
+    "spent": 64.575
+  },
+  {
+    "uid": 0,
+    "sid": 0,
+    "amount": 3,
+    "spent": 140.51
+  }
+]

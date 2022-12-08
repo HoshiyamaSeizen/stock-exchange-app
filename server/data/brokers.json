@@ -2,17 +2,17 @@
   {
     "id": 0,
     "name": "John Doe 0",
-    "money": 100
+    "money": 9257.929999999997
   },
   {
     "id": 1,
     "name": "John Doe 1",
-    "money": 100
+    "money": 35.425
   },
   {
     "id": 2,
     "name": "John Doe 2",
-    "money": 100
+    "money": 22.18690000000015
   },
   {
     "id": 3,
@@ -107,6 +107,11 @@
   {
     "id": 21,
     "name": "John Doe 21",
-    "money": 1200
+    "money": 12000
+  },
+  {
+    "id": 22,
+    "name": "ewrwer",
+    "money": 213
   }
 ]

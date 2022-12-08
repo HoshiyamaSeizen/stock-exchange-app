@@ -22,7 +22,7 @@ export class StocksService {
   }
 }
 
-type Stock = {
+export type Stock = {
   id: number;
   abbr: string;
   name: string;
