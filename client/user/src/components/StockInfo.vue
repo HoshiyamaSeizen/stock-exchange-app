@@ -226,6 +226,6 @@ export default {
 canvas {
 	width: 85vw;
 	/* max-width: 950px; */
-	max-height: 470px;
+	max-height: 440px;
 }
 </style>

@@ -1,5 +1,5 @@
 <script>
-import BrokerInfo from './icons/BrokerInfo.vue';
+import BrokerInfo from './BrokerInfo.vue';
 
 export default {
 	data() {
