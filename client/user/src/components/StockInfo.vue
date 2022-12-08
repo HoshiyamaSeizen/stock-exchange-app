@@ -147,19 +147,27 @@ export default {
 <template>
 	<h2 class="title">{{ stock?.abbr }} | {{ stock?.name }}</h2>
 	<p>
-		Date: <span>{{ this.data.dates.at(-1) }}</span>
+		Date: <span id="date">{{ this.data.dates.at(-1) }}</span>
 	</p>
 	<p>
-		Price: <span class="money">{{ Math.round(stock?.price * 1e4) / 1e4 }}$</span>
+		Price:
+		<span class="money"
+			><span id="price">{{ Math.round(stock?.price * 1e4) / 1e4 }}</span
+			>$</span
+		>
 	</p>
 	<p>
-		Balance: <span class="money">{{ Math.round(user.money * 1e4) / 1e4 }}$</span>
+		Balance:
+		<span class="money"
+			><span id="balance">{{ Math.round(user.money * 1e4) / 1e4 }}</span
+			>$</span
+		>
 	</p>
 	<div class="amount">
 		<p>Your amount:</p>
-		<button class="quantity minus" @click="sell">-</button>
-		<p>{{ user.amount }}</p>
-		<button class="quantity plus" @click="buy">+</button>
+		<button id="sell-btn" class="quantity minus" @click="sell">-</button>
+		<p id="amount">{{ user.amount }}</p>
+		<button id="buy-btn" class="quantity plus" @click="buy">+</button>
 	</div>
 	<div class="graph">
 		<canvas ref="canvas" @load="genChart"></canvas>
@@ -178,7 +186,8 @@ export default {
 * {
 	font-size: 1.1rem;
 }
-.money {
+.money,
+.money span {
 	margin-left: auto;
 	color: darkgreen;
 	font-weight: bold;
