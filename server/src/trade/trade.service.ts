@@ -60,21 +60,14 @@ export class TradeService {
       const brokers = JSON.parse(fs.readFileSync(brokersFile).toString());
       const trades = JSON.parse(fs.readFileSync(tradesFile).toString());
 
-      // trades.forEach((t) => {
-      //   const broker = brokers.find((b) => b.id === t.uid);
-      //   if (!broker.stocks) broker.stocks = [];
-      //   broker.stocks.push(t);
-      // });
-
       this.index = this.index + 1;
-      if (this.index === dates.length) this.stopTrade();
+      if (this.index === dates.length) return this.stopTrade();
       server.emit('data', {
         date: dates[this.index],
-        stocks:
-          stocksFull?.map((stock) => ({
-            ...stock,
-            price: this.data.get(stock.abbr)[this.index],
-          })) || [],
+        stocks: stocksFull.map((stock) => ({
+          ...stock,
+          price: this.data.get(stock.abbr)[this.index],
+        })),
         brokers,
         trades,
       });
